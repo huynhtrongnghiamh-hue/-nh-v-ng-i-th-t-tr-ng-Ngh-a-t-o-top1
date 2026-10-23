@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080a10">
+<title>POR VISION X</title>
+
+<style>
+:root{
+ --bg:#080a10;--panel:#111725;--line:#29364d;
+ --red:#ff3158;--cyan:#53e6ff;--green:#64f5b4;
+ --text:#f4f7ff;--muted:#8e9cb5;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:radial-gradient(ellipse at top,#202844,var(--bg) 65%);
+ color:var(--text);font:14px system-ui,Arial;min-height:100vh
+}
+button,input,select{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:disabled{opacity:.4}
+.wrap{max-width:1350px;margin:auto;padding:16px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.logo{
+ width:48px;height:48px;border-radius:15px;
+ display:grid;place-items:center;font-size:29px;
+ background:linear-gradient(135deg,var(--red),#892aff);
+ box-shadow:0 0 25px #ff315833
+}
+.brand{flex:1}
+.brand h1{margin:0;font-size:23px;letter-spacing:2px}
+.brand h1 span{color:var(--red)}
+.brand small{color:var(--muted);letter-spacing:2px}
+.live{border:1px solid var(--line);padding:8px 11px;border-radius:20px;font-size:10px}
+.hero{margin-bottom:15px}
+.hero h2{font-size:clamp(25px,4vw,36px);margin:4px 0}
+.hero p{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.8fr);gap:14px}
+.card{
+ background:linear-gradient(150deg,#151c2c,#0d111b);
+ border:1px solid var(--line);border-radius:19px;
+ padding:12px;min-width:0
+}
+.head{display:flex;justify-content:space-between;gap:8px;padding:3px 3px 12px}
+.head b{font-size:11px;letter-spacing:1.5px}
+#stage{
+ position:relative;aspect-ratio:4/3;min-height:270px;
+ overflow:hidden;border-radius:13px;background:#03050a
+}
+#video,#overlay{position:absolute;inset:0;width:100%;height:100%}
+#video{object-fit:cover;display:none}
+#overlay{pointer-events:none}
+.placeholder{
+ position:absolute;inset:0;display:flex;flex-direction:column;
+ justify-content:center;align-items:center;text-align:center;
+ padding:20px;background:radial-gradient(ellipse,#192137,#080a10)
+}
+.placeholder strong{font-size:18px}
+.placeholder p{font-size:12px;color:var(--muted);max-width:270px}
+.camicon{font-size:43px;color:var(--cyan);margin-bottom:10px}
+.hud{position:absolute;top:10px;left:10px;right:10px;
+ display:flex;justify-content:space-between;gap:6px;pointer-events:none}
+.hud span{background:#050810dc;border:1px solid #ffffff25;
+ border-radius:7px;padding:6px 8px;font-size:10px}
+#scanline{
+ position:absolute;left:0;right:0;height:1px;top:0;
+ background:linear-gradient(90deg,transparent,var(--red),transparent);
+ box-shadow:0 0 15px var(--red);display:none;pointer-events:none
+}
+.scanning #scanline{display:block;animation:scan 3s linear infinite}
+@keyframes scan{from{top:0}to{top:100%}}
+.grid-on:after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:linear-gradient(#53e6ff19 1px,transparent 1px),
+ linear-gradient(90deg,#53e6ff19 1px,transparent 1px);
+ background-size:10% 10%
+}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:9px}
+.stat{background:#090d16;border:1px solid #263149;border-radius:10px;padding:10px;min-width:0}
+.stat small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase}
+.stat strong{display:block;font-size:18px;margin-top:5px;overflow-wrap:anywhere}
+.cyan{color:var(--cyan)}
+.status{padding:12px 3px;color:#c5cee0;font-size:12px;line-height:1.5}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.btn{background:#1a2233;border:1px solid #34405a;color:white;border-radius:10px;padding:12px 8px;font-weight:700;font-size:12px}
+.primary{background:linear-gradient(100deg,#ff3158,#d42a87);border:0}
+.active{border-color:var(--cyan);color:var(--cyan)}
+.full{grid-column:1/-1}
+.section{padding:13px 2px;border-top:1px solid #293246}
+.section:first-child{border:0;padding-top:0}
+.section h3{font-size:11px;letter-spacing:1.3px;margin:0 0 13px}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:13px 0;font-size:12px;color:#cbd4e5}
+.setting input[type=range]{width:42%;accent-color:var(--red)}
+.setting input[type=checkbox]{width:18px;height:18px;accent-color:var(--red)}
+.setting select{max-width:50%;background:#0b101a;color:white;border:1px solid var(--line);border-radius:8px;padding:7px}
+.notice{margin-top:14px;border:1px solid #245044;background:#0c1717;color:#b1cfc4;border-radius:12px;padding:13px;font-size:11px;line-height:1.6}
+.log{max-height:110px;overflow:auto;color:var(--muted);font-size:11px;white-space:pre-wrap;line-height:1.8}
+footer{text-align:center;color:#66728a;font-size:10px;padding:20px 0}
+#chooser{
+ position:fixed;inset:0;z-index:10;background:#05070cf5;
+ display:flex;align-items:center;justify-content:center;padding:20px;
+ backdrop-filter:blur(15px)
+}
+.choosebox{width:min(540px,100%);padding:24px;border:1px solid var(--line);
+ border-radius:22px;background:linear-gradient(145deg,#181e30,#0a0d15)}
+.choosebox h2{margin:5px 0;font-size:27px}
+.choosebox p{color:var(--muted);font-size:13px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.choice{padding:18px 12px;min-height:135px;text-align:left;background:#111725;border:1px solid #35415a;border-radius:14px;color:white}
+.choice strong{display:block;margin-top:10px;font-size:16px}
+.choice small{display:block;color:var(--muted);margin-top:6px;line-height:1.5}
+@media(max-width:760px){
+ .wrap{padding:12px}
+ .grid{grid-template-columns:1fr}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #stage{aspect-ratio:3/4;max-height:60vh}
+ .brand h1{font-size:20px}
+}
+body.pc-mode .wrap{max-width:1500px;padding:24px}
+body.pc-mode .grid{grid-template-columns:minmax(0,1.8fr) minmax(310px,.7fr)}
+body.pc-mode #stage{aspect-ratio:16/10;min-height:400px}
+@media(max-width:760px){
+ body.pc-mode .grid{grid-template-columns:1fr}
+ body.pc-mode #stage{aspect-ratio:3/4;min-height:270px}
+}
+</style>
+</head>
+
+<body>
+<div id="chooser">
+ <div class="choosebox">
+  <small style="color:var(--red);letter-spacing:2px">POR / VISION X</small>
+  <h2>Chọn giao diện</h2>
+  <p>Chọn bố cục phù hợp với thiết bị.</p>
+  <div class="choices">
+   <button class="choice" onclick="layout('phone')">
+    <span style="font-size:30px">📱</span>
+    <strong>Điện thoại</strong>
+    <small>Nút lớn, giao diện dọc, tối ưu Android.</small>
+   </button>
+   <button class="choice" onclick="layout('pc')">
+    <span style="font-size:30px">🖥️</span>
+    <strong>PC / Máy tính</strong>
+    <small>Màn hình rộng, camera và bảng điều khiển cạnh nhau.</small>
+   </button>
+  </div>
+ </div>
+</div>
+
+<div class="wrap">
+<header>
+ <div class="logo">⌖</div>
+ <div class="brand">
+  <h1>POR <span>VISION X</span></h1>
+  <small>SMART CAMERA SYSTEM</small>
+ </div>
+ <div class="live" id="live">● STANDBY</div>
+</header>
+
+<div class="hero">
+ <div style="color:var(--cyan);font-size:10px;letter-spacing:2px">REAL-TIME AI SCANNER</div>
+ <h2>See more. <span style="color:var(--cyan)">Scan smarter.</span></h2>
+ <p>Nhận diện người trong camera và ước tính khoảng cách tham khảo.</p>
+</div>
+
+<div class="grid">
+<section class="card">
+ <div class="head"><b>LIVE CAMERA FEED</b><span id="resolution" style="color:var(--muted);font-size:10px">NO SIGNAL</span></div>
+ <div id="stage">
+  <div class="placeholder" id="placeholder">
+   <div class="camicon">⌖</div>
+   <strong>Scanner đang chờ</strong>
+   <p>Bật camera để bắt đầu nhận diện bằng AI.</p>
+  </div>
+  <video id="video" autoplay muted playsinline></video>
+  <canvas id="overlay"></canvas>
+  <div id="scanline"></div>
+  <div class="hud"><span>POR // VISION X</span><span id="hudState">STANDBY</span></div>
+ </div>
+
+ <div class="stats">
+  <div class="stat"><small>Người phát hiện</small><strong id="people">0</strong></div>
+  <div class="stat"><small>Độ tin cậy</small><strong class="cyan" id="confidence">--</strong></div>
+  <div class="stat"><small>Khoảng cách*</small><strong id="distance">--</strong></div>
+  <div class="stat"><small>FPS xử lý</small><strong class="cyan" id="fps">--</strong></div>
+ </div>
+ <div class="status" id="status">Chưa bật camera. Cần Internet để tải mô hình AI lần đầu.</div>
+ <div class="controls">
+  <button class="btn primary" id="start">▶ Bật camera</button>
+  <button class="btn" id="stop" disabled>■ Dừng camera</button>
+  <button class="btn" id="switch" disabled>⇄ Đổi camera</button>
+  <button class="btn" id="snapshot" disabled>▣ Chụp ảnh</button>
+  <button class="btn" id="fullscreen">⛶ Toàn màn hình</button>
+  <button class="btn" id="torch" disabled>⚡ Đèn flash</button>
+ </div>
+</section>
+
+<aside class="card">
+ <div class="section">
+  <h3>◈ CÀI ĐẶT AI</h3>
+  <label class="setting">Độ nhạy
+   <input id="sensitivity" type="range" min="30" max="85" value="50">
+   <b id="sval">50%</b>
+  </label>
+  <label class="setting">Chiều cao tham chiếu
+   <input id="personHeight" type="range" min="140" max="200" value="170">
+   <b id="hval">170</b>
+  </label>
+  <label class="setting">Góc nhìn dọc
+   <input id="fov" type="range" min="45" max="75" value="60">
+   <b id="fval">60°</b>
+  </label>
+  <label class="setting">Màu scanner
+   <select id="theme">
+    <option value="red">Neon đỏ</option>
+    <option value="cyan">Cyber cyan</option>
+    <option value="green">Neon xanh</option>
+   </select>
+  </label>
+ </div>
+
+ <div class="section">
+  <h3>⌗ HIỆU ỨNG HUD</h3>
+  <label class="setting">Đường quét laser <input id="scanToggle" type="checkbox" checked></label>
+  <label class="setting">Lưới công nghệ <input id="gridToggle" type="checkbox"></label>
+  <label class="setting">Hiện khoảng cách từng người <input id="distToggle" type="checkbox" checked></label>
+  <label class="setting">Lật gương camera trước <input id="mirror" type="checkbox"></label>
+  <button class="btn full" onclick="showChooser()">⇄ Đổi PC / điện thoại</button>
+ </div>
+
+ <div class="section">
+  <h3>▤ THỐNG KÊ PHIÊN</h3>
+  <div class="stats">
+   <div class="stat"><small>Tổng phát hiện</small><strong id="total">0</strong></div>
+   <div class="stat"><small>Thời gian</small><strong id="elapsed">00:00</strong></div>
+  </div>
+  <div class="controls" style="margin-top:10px">
+   <button class="btn" id="reset">↻ Đặt lại</button>
+   <button class="btn" id="export">⇩ Xuất báo cáo</button>
+  </div>
+ </div>
+
+ <div class="section">
+  <h3>▣ NHẬT KÝ HỆ THỐNG</h3>
+  <div class="log" id="log">[POR] Giao diện đã khởi tạo.
+[POR] Chờ bật camera.</div>
+ </div>
+</aside>
+</div>
+
+<div class="notice">
+ <b>🔒 Quyền riêng tư và độ chính xác</b><br>
+ Camera chỉ được bật khi mày cho phép. Nhận diện chạy trong trình duyệt.
+ Công cụ không xác định danh tính, không định vị người lạ và không nhìn xuyên tường.
+ Khoảng cách là ước tính từ kích thước người trên ảnh, chiều cao tham chiếu
+ và góc nhìn giả định. Có thể sai đáng kể nếu camera chưa hiệu chỉnh.
+</div>
+<footer>POR VISION X • MOBILE / DESKTOP • CAMERA CONTROLLED BY USER</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const video=$('video'),canvas=$('overlay'),ctx=canvas.getContext('2d');
+let stream=null,model=null,running=false,busy=false;
+let facing='environment',raf=0,lastDetect=0,total=0,startTime=0,timer=null;
+let frameCount=0,fpsTime=performance.now(),torchOn=false;
+
+const colors={red:'#ff3158',cyan:'#53e6ff',green:'#64f5b4'};
+function layout(type){
+ document.body.classList.toggle('pc-mode',type==='pc');
+ document.getElementById('chooser').style.display='none';
+ try{localStorage.setItem('por-layout',type)}catch(e){}
+}
+function showChooser(){$('chooser').style.display='flex'}
+try{
+ const saved=localStorage.getItem('por-layout');
+ if(saved==='pc'||saved==='phone')layout(saved);
+}catch(e){}
+
+function log(s){
+ const el=$('log');
+ el.textContent=(el.textContent+'\n['+new Date().toLocaleTimeString()+'] '+s)
+ .split('\n').slice(-7).join('\n');
+ el.scrollTop=el.scrollHeight;
+}
+function status(s){$('status').textContent=s}
+function scannerColor(){return colors[$('theme').value]||colors.red}
+
+function resize(){
+ const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);
+ canvas.width=Math.round(r.width*d);
+ canvas.height=Math.round(r.height*d);
+ ctx.setTransform(d,0,0,d,0,0);
+}
+window.addEventListener('resize',resize);
+
+function loadScript(src){
+ return new Promise((resolve,reject)=>{
+  const s=document.createElement('script');
+  s.src=src;s.onload=resolve;
+  s.onerror=()=>reject(Error('Không tải được thư viện AI. Kiểm tra Internet.'));
+  document.head.appendChild(s);
+ });
+}
+async function loadAI(){
+ if(model)return;
+ status('Đang tải mô hình AI lần đầu...');
+ if(!window.tf)await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js');
+ if(!window.cocoSsd)await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
+ await tf.ready();
+ model=await cocoSsd.load({base:'lite_mobilenet_v2'});
+ log('Mô hình nhận diện đã sẵn sàng.');
+}
+
+async function startCamera(){
+ if(!window.isSecureContext){
+  status('Camera cần HTTPS hoặc localhost. Hãy mở trang bằng một website HTTPS.');
+  return;
+ }
+ if(!navigator.mediaDevices?.getUserMedia){
+  status('Trình duyệt này không hỗ trợ camera.');
+  return;
+ }
+ $('start').disabled=true;
+ try{
+  await loadAI();
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  stream=await navigator.mediaDevices.getUserMedia({
+   audio:false,
+   video:{facingMode:{ideal:facing},width:{ideal:1280},height:{ideal:960}}
+  });
+  video.srcObject=stream;
+  await video.play();
+  video.style.display='block';
+  $('placeholder').style.display='none';
+  running=true;startTime=Date.now();fpsTime=performance.now();frameCount=0;
+  $('stop').disabled=false;$('switch').disabled=false;$('snapshot').disabled=false;
+  $('live').textContent='● LIVE';$('live').style.color=scannerColor();
+  $('hudState').textContent='SCANNING';
+  $('stage').classList.toggle('scanning',$('scanToggle').checked);
+  $('resolution').textContent=video.videoWidth+' × '+video.videoHeight;
+  resize();status('Camera đang hoạt động. Đang quét hình ảnh...');
+  log('Camera đã bật.');
+  clearInterval(timer);
+  timer=setInterval(()=>{
+   const n=Math.floor((Date.now()-startTime)/1000);
+   $('elapsed').textContent=String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+  },1000);
+  const caps=stream.getVideoTracks()[0].getCapabilities?.();
+  $('torch').disabled=!(caps&&caps.torch);
+  detectLoop();
+ }catch(e){
+  $('start').disabled=false;
+  status(e.name==='NotAllowedError'?'Chưa cấp quyền camera. Hãy cho phép trong cài đặt trang web.':e.message);
+  log('Lỗi: '+e.message);
+ }
+}
+
+async function detectLoop(){
+ if(!running)return;
+ const w=canvas.clientWidth,h=canvas.clientHeight;
+ if(video.readyState>=2&&!busy&&performance.now()-lastDetect>120){
+  busy=true;lastDetect=performance.now();
+  try{
+   const cutoff=Number($('sensitivity').value)/100;
+   const predictions=await model.detect(video,20,cutoff);
+   const sx=w/video.videoWidth,sy=h/video.videoHeight;
+   ctx.clearRect(0,0,w,h);
+   let count=0,best=0,nearest=null;
+   const col=scannerColor();
+   for(const p of predictions){
+    if(p.class!=='person'||p.score<cutoff)continue;
+    count++;best=Math.max(best,p.score);
+    const [x,y,bw,bh]=p.bbox;
+    const xx=x*sx,yy=y*sy,ww=bw*sx,hh=bh*sy;
+    const focal=video.videoHeight/
+     (2*Math.tan(Number($('fov').value)*Math.PI/360));
+    const meters=(Number($('personHeight').value)/100*focal)/bh;
+    if(Number.isFinite(meters)&&meters>0&&(nearest===null||meters<nearest))
+     nearest=meters;
+
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;
+    ctx.strokeRect(xx,yy,ww,hh);
+    const label='PERSON '+Math.round(p.score*100)+'%';
+    ctx.font='bold 12px system-ui';
+    const lw=ctx.measureText(label).width+14;
+    ctx.fillStyle=col;
+    ctx.fillRect(xx,Math.max(0,yy-24),lw,24);
+    ctx.fillStyle='#fff';
+    ctx.fillText(label,xx+7,Math.max(16,yy-8));
+
+    const k=Math.min(18,ww/4,hh/4);
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;
+    for(const [ax,ay,dx,dy] of [
+     [xx,yy,1,1],[xx+ww,yy,-1,1],
+     [xx,yy+hh,1,-1],[xx+ww,yy+hh,-1,-1]
+    ]){
+     ctx.beginPath();ctx.moveTo(ax,ay+dy*k);
+     ctx.lineTo(ax,ay);ctx.lineTo(ax+dx*k,ay);ctx.stroke();
+    }
+    if($('distToggle').checked&&ww>65&&hh>65){
+     ctx.font='bold 11px system-ui';
+     ctx.fillStyle='#050810e8';
+     ctx.fillRect(xx,Math.min(h-21,yy+hh+3),80,19);
+     ctx.fillStyle=col;
+     ctx.fillText('~'+meters.toFixed(1)+' m*',xx+5,Math.min(h-7,yy+hh+16));
+    }
+   }
+   $('people').textContent=count;
+   $('confidence').textContent=count?Math.round(best*100)+'%':'--';
+   $('distance').textContent=nearest===null?'--':'~'+nearest.toFixed(1)+' m';
+   if(count)total+=count;
+   $('total').textContent=total;
+   frameCount++;
+   const now=performance.now();
+   if(now-fpsTime>=1000){
+    $('fps').textContent=frameCount;
+    frameCount=0;fpsTime=now;
+   }
+   status(count?'Phát hiện '+count+' người trong khung hình.':'Đang quét. Chưa phát hiện người.');
+  }catch(e){status('Lỗi nhận diện: '+e.message)}
+  finally{busy=false}
+ }
+ if(running)raf=requestAnimationFrame(detectLoop);
+}
+
+function stopCamera(){
+ running=false;cancelAnimationFrame(raf);clearInterval(timer);
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+ video.pause();video.srcObject=null;video.style.display='none';
+ $('placeholder').style.display='flex';
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ $('people').textContent='0';$('confidence').textContent='--';
+ $('distance').textContent='--';$('fps').textContent='--';
+ $('resolution').textContent='NO SIGNAL';
+ $('start').disabled=false;$('stop').disabled=true;
+ $('switch').disabled=true;$('snapshot').disabled=true;$('torch').disabled=true;
+ $('live').textContent='● STANDBY';$('hudState').textContent='STANDBY';
+ $('stage').classList.remove('scanning');
+ status('Camera đã dừng.');log('Camera đã dừng.');
+}
+$('start').onclick=startCamera;
+$('stop').onclick=stopCamera;
+$('switch').onclick=async()=>{
+ facing=facing==='environment'?'user':'environment';
+ if(running)await startCamera();
+};
+$('snapshot').onclick=()=>{
+ if(!running)return;
+ const c=document.createElement('canvas');
+ c.width=video.videoWidth;c.height=video.videoHeight;
+ c.getContext('2d').drawImage(video,0,0);
+ const a=document.createElement('a');
+ a.download='POR_Vision_'+Date.now()+'.png';
+ a.href=c.toDataURL('image/png');a.click();
+ log('Đã lưu ảnh camera.');
+};
+$('fullscreen').onclick=async()=>{
+ try{
+  if(!document.fullscreenElement)await $('stage').requestFullscreen();
+  else await document.exitFullscreen();
+ }catch(e){status('Không hỗ trợ toàn màn hình ở chế độ này.')}
+};
+$('torch').onclick=async()=>{
+ try{
+  const track=stream?.getVideoTracks()[0];
+  if(!track)return;
+  torchOn=!torchOn;
+  await track.applyConstraints({advanced:[{torch:torchOn}]});
+  $('torch').textContent=torchOn?'⚡ Tắt flash':'⚡ Đèn flash';
+ }catch(e){status('Camera hoặc trình duyệt không hỗ trợ flash.');torchOn=false}
+};
+$('sensitivity').oninput=e=>$('sval').textContent=e.target.value+'%';
+$('personHeight').oninput=e=>$('hval').textContent=e.target.value+' cm';
+$('fov').oninput=e=>$('fval').textContent=e.target.value+'°';
+$('scanToggle').onchange=()=>$('stage').classList.toggle('scanning',$('scanToggle').checked&&running);
+$('gridToggle').onchange=()=>$('stage').classList.toggle('grid-on',$('gridToggle').checked);
+$('theme').onchange=()=>{
+ document.documentElement.style.setProperty('--red',scannerColor());
+ $('live').style.color=scannerColor();
+};
+$('mirror').onchange=()=>{
+ video.style.transform=$('mirror').checked&&facing==='user'?'scaleX(-1)':'none';
+};
+$('reset').onclick=()=>{
+ total=0;$('total').textContent='0';startTime=Date.now();
+ $('elapsed').textContent='00:00';log('Đã đặt lại thống kê.');
+};
+$('export').onclick=()=>{
+ const report=[
+ 'POR VISION X - BÁO CÁO',
+ 'Thời gian xuất: '+new Date().toLocaleString(),
+ 'Tổng lượt phát hiện: '+total,
+ 'Số người hiện tại: '+$('people').textContent,
+ 'Độ tin cậy cao nhất: '+$('confidence').textContent,
+ 'Khoảng cách ước tính: '+$('distance').textContent,
+ 'Lưu ý: khoảng cách chưa được hiệu chuẩn.'
+ ].join('\n');
+ const url=URL.createObjectURL(new Blob([report],{type:'text/plain;charset=utf-8'}));
+ const a=document.createElement('a');a.href=url;a.download='POR_Report.txt';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+window.addEventListener('pagehide',stopCamera);
+</script>
+</body>
+</html>
